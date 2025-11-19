@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 function PostForm({ initialData = {}, onSubmit, submitLabel = "Create Post" }) {
   const [title, setTitle] = useState(initialData.title || "");
@@ -8,7 +8,7 @@ function PostForm({ initialData = {}, onSubmit, submitLabel = "Create Post" }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!title.trim()) return; // required
+    if (!title.trim()) return;
 
     const formData = {
       title,
