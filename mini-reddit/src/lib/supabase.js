@@ -76,27 +76,13 @@ export const api = {
     }
   },
 
-  async upvotePost(id) {
-    const { data: post, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", id)
-      .single();
+async upvotePost(id) {
+  const { data, error } = await supabase
+    .rpc("increment_post_upvotes", { postid: id });
 
-    if (error) {
-      console.error("Error fetching post for upvote:", error);
-      return;
-    }
-
-    const { error: updateError } = await supabase
-      .from("posts")
-      .update({ upvotes: post.upvotes + 1 })
-      .eq("id", id);
-
-    if (updateError) {
-      console.error("Error upvoting post:", updateError);
-    }
-  },
+  if (error) console.error(error);
+  return data;
+},
 
   async fetchComments(postId) {
     const { data, error } = await supabase
@@ -113,18 +99,21 @@ export const api = {
     return data;
     },
 
-  async addComment(postId, text) {
-    const { data: newComment, error } = await supabase
-      .from("comments")
-      .insert([
-        {
-          post_id: postId,
-          text: text,
-          created_at: new Date().toISOString(),
-        },
-      ])
-      .select()
-      .single();
-  },
+ 
+    async addComment(postId, text) {
+  const { data, error } = await supabase
+    .from("comments")
+    .insert({ post_id: postId, content: text })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error adding comment:", error);
+    return null;
+  }
+
+  return data;
+}
+,
 };
 
